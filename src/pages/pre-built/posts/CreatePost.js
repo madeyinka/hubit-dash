@@ -4,7 +4,7 @@ import Content from "../../../layout/content/Content";
 import Head from "../../../layout/head/Head";
 import { FormGroup, Label, Spinner, Row, Col } from "reactstrap";
 import { Editor } from "@tinymce/tinymce-react";
-import Dropzone from "react-dropzone";
+
 const unique = require("array-unique")
 import {
     Button,
@@ -32,7 +32,7 @@ function CreatePost() {
         type:null,
         content:"",
         media:"",
-        keywords:"",
+        keywords:[],
         author:"Admin",
         meta_title:"",
         meta_keywords:"",
@@ -48,7 +48,7 @@ function CreatePost() {
     const [featured, setFeatured] = useState(false)
     const [facebook, setFacebook] = useState(false)
     const [slider, setSlider] = useState(false)
-    const [sticky, setSticky] = useState(false)
+    const [popular, setPopular] = useState(false)
     const [editor, setEditor] = useState(false)
 
 
@@ -82,6 +82,11 @@ function CreatePost() {
         {value:"Video", label:"Video"}
     ]
 
+    const tags = [
+        {value:"Enugu", label:"Enugu"},
+        {value:"2023Election", label:"2023Election"}
+    ]
+
     // OnChange function to get the input data
     const onInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -100,12 +105,13 @@ function CreatePost() {
             category:formData.category,
             type:formData.type,
             content:formData.content,
+            short_content:formData.short_content,
             image:imageUrl,
-            keywords:unique(formData.keywords.replace(" ","").split(",")),
+            keywords:formData.keywords,
             post_settings:{
                 featured:featured,
                 slider:slider,
-                sticky:sticky,
+                popular:popular,
                 editor:editor,
                 facebook:facebook
             },
@@ -225,6 +231,22 @@ function CreatePost() {
                                 </FormGroup>
                             </Col>
                             <Col md="12">
+                                <FormGroup>
+                                    <Label htmlFor="excerpt" className="form-label">
+                                        Excerpt
+                                    </Label>
+                                    <div className="form-control-wrap">
+                                        <input 
+                                            className="form-control" 
+                                            type="text" 
+                                            id="excerpt" 
+                                            name="short_content"
+                                            onChange={(e) => onInputChange(e)}
+                                            placeholder="short description of content" />
+                                    </div>
+                                </FormGroup>
+                            </Col>
+                            <Col md="12">
                                 <label className="form-label">Content</label>
                                 <Editor
                                     onInit={(evt, editor) => (editorRef.current = editor)}
@@ -244,22 +266,6 @@ function CreatePost() {
                                     }}
                                 />
                                 {errors.content && <span className="invalid">{errors.content.message}</span>}
-                            </Col>
-                            <Col md="12">
-                                <FormGroup>
-                                    <Label htmlFor="tags" className="form-label">
-                                        Tags
-                                    </Label>
-                                    <div className="form-control-wrap">
-                                        <input 
-                                            className="form-control" 
-                                            type="text" 
-                                            id="keywords" 
-                                            name="keywords"
-                                            onChange={(e) => onInputChange(e)}
-                                            placeholder="Tag separated by comma" />
-                                    </div>
-                                </FormGroup>
                             </Col>
                         </Row>
                     </PreviewCard>
@@ -320,6 +326,26 @@ function CreatePost() {
                                         placeholder="Post Author"
                                     />
                                     </div>
+                                </FormGroup>
+                            </Col>
+                        </Row>
+                        <Row className="g-3 align-center">
+                            <Col md="5">
+                                <FormGroup>
+                                    <label className="form-label" htmlFor="keywords">
+                                        Post Tags
+                                    </label>
+                                    <span className="form-note">Select post tags </span>
+                                </FormGroup>
+                            </Col>
+                            <Col lg="7">
+                                <FormGroup>
+                                <RSelect
+                                    options={tags}
+                                    isMulti
+                                    defaultValue={formData.keywords}
+                                    onChange={(e) => setFormData({ ...formData, keywords: e })}
+                                />
                                 </FormGroup>
                             </Col>
                         </Row>
@@ -409,7 +435,7 @@ function CreatePost() {
                                 <Col lg="5">
                                     <FormGroup>
                                         <label className="form-label" htmlFor="featured">
-                                        Featured Post
+                                        Featured
                                         </label>
                                     </FormGroup>
                                 </Col>
@@ -431,7 +457,7 @@ function CreatePost() {
                                 <Col lg="5">
                                     <FormGroup>
                                         <label className="form-label" htmlFor="slider">
-                                        Slider Post
+                                        Slider
                                         </label>
                                     </FormGroup>
                                 </Col>
@@ -452,8 +478,8 @@ function CreatePost() {
                             <Row className="g-3">
                                 <Col lg="5">
                                     <FormGroup>
-                                        <label className="form-label" htmlFor="sticky">
-                                        Sticky Post
+                                        <label className="form-label" htmlFor="popular">
+                                        Popular
                                         </label>
                                     </FormGroup>
                                 </Col>
@@ -463,19 +489,19 @@ function CreatePost() {
                                         <input
                                             type="checkbox"
                                             className="custom-control-input form-control"
-                                            onChange={() => setSticky(!sticky)}
-                                            id="sticky"
+                                            onChange={() => setPopular(!popular)}
+                                            id="popular"
                                         />
-                                        <label className="custom-control-label" htmlFor="sticky"></label>
+                                        <label className="custom-control-label" htmlFor="popular"></label>
                                         </div>
                                     </FormGroup>
                                 </Col>
                             </Row>
-                            {/* <Row className="g-3">
+                            <Row className="g-3">
                                 <Col lg="5">
                                     <FormGroup>
                                         <label className="form-label" htmlFor="editor">
-                                        Editor's Pick
+                                        Editor
                                         </label>
                                     </FormGroup>
                                 </Col>
@@ -492,7 +518,7 @@ function CreatePost() {
                                         </div>
                                     </FormGroup>
                                 </Col>
-                            </Row> */}
+                            </Row>
                             <OverlineTitle tag="span" className="preview-title-lg mt-3">
                                 Socials{" "}
                             </OverlineTitle>
