@@ -63,7 +63,7 @@ function CreatePost() {
             if (isMounted && response.data.data.categories) {
                 const data = response.data.data.categories, catList = []
                 data.filter((item) => {
-                    isMounted && catList.push({value:item.id, label:item.label})
+                    isMounted && catList.push({value:item.slug, label:item.label})
                 })
                 setCatOptions(catList)
             }
