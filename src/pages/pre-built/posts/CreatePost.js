@@ -1,11 +1,11 @@
-import React, {useRef, useState, useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import {useNavigate} from "react-router-dom"
 import Content from "../../../layout/content/Content";
 import Head from "../../../layout/head/Head";
-import { FormGroup, Label, Spinner, Row, Col } from "reactstrap";
-import { Editor } from "@tinymce/tinymce-react";
-
-const unique = require("array-unique")
+import { FormGroup, Label, Row, Col } from "reactstrap";
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css";
+import EditorToolbar, { modules, formats } from "../../../components/partials/react-quill/EditorToolbar";
 import {
     Button,
     Block,
@@ -22,6 +22,7 @@ import {
   import { v4 as uuidv4 } from "uuid"
   import slugify from "slugify";
   import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
+  const unique = require("array-unique")
 
 function CreatePost() {
     const axiosPrivate = useAxiosPrivate()
@@ -63,7 +64,7 @@ function CreatePost() {
             if (isMounted && response.data.data.categories) {
                 const data = response.data.data.categories, catList = []
                 data.filter((item) => {
-                    isMounted && catList.push({value:item.slug, label:item.label})
+                   return  isMounted && catList.push({value:item.slug, label:item.label})
                 })
                 setCatOptions(catList)
             }
@@ -74,7 +75,7 @@ function CreatePost() {
             isMounted = false
             controller.abort()
         }
-    }, [])
+    }, [axiosPrivate])
 
     const Types = [
         {value:"Article", label:"Article"},
@@ -95,7 +96,7 @@ function CreatePost() {
     // 
     const onFormSubmit = async () => { 
         const {title, category, type, content} = formData
-        if (title == "" || content == "" || !category.value || !type.value) {
+        if (title === "" || content === "" || !category.value || !type.value) {
             return
         }
         let submittedData = {
@@ -165,7 +166,6 @@ function CreatePost() {
         }
     }
 
-    const editorRef = useRef(null);
     const { errors, register, handleSubmit } = useForm();
 
   return (
@@ -247,6 +247,20 @@ function CreatePost() {
                                 </FormGroup>
                             </Col>
                             <Col md="12">
+                                <FormGroup>
+                                    <label className="form-label">Content</label>
+                                    <EditorToolbar toolbarId={'t1'}/>
+                                    <ReactQuill 
+                                        theme="snow"
+                                        placeholder="Text editor content..."
+                                        onChange={(e) => setFormData({...formData, content:e})}
+                                        modules={modules('t1')}
+                                        formats={formats}
+                                        style={{ width: "100%", height: "100%" }}
+                                    />
+                                </FormGroup>
+                            </Col>
+                            {/* <Col md="12">
                                 <label className="form-label">Content</label>
                                 <Editor
                                     onInit={(evt, editor) => (editorRef.current = editor)}
@@ -266,7 +280,7 @@ function CreatePost() {
                                     }}
                                 />
                                 {errors.content && <span className="invalid">{errors.content.message}</span>}
-                            </Col>
+                            </Col> */}
                         </Row>
                     </PreviewCard>
                     <PreviewCard>

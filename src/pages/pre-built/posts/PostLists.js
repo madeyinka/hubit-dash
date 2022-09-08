@@ -4,12 +4,8 @@ import Head from "../../../layout/head/Head";
 import {
   DropdownMenu,
   DropdownToggle,
-  FormGroup,
   UncontrolledDropdown,
-  Modal,
-  ModalBody,
   DropdownItem,
-  Form,
 } from "reactstrap";
 import {
   Block,
@@ -19,9 +15,7 @@ import {
   BlockHeadContent,
   BlockTitle,
   Icon,
-  Row,
-  Col,
-  UserAvatar,
+ 
   PaginationComponent,
   Button,
   DataTable,
@@ -29,7 +23,6 @@ import {
   DataTableHead,
   DataTableRow,
   DataTableItem,
-  TooltipComponent,
   RSelect,
 } from "../../../components/Component";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
@@ -62,7 +55,7 @@ function PostLists() {
         })
         isMounted && setData(response.data.data.posts)
       } catch (e) {
-        if (e.response.status == 403) {
+        if (e.response.status === 403) {
           navigate('/auth-login', { state: { from:location }, replace: true })
         }
       }
@@ -70,10 +63,10 @@ function PostLists() {
     getPosts()
 
     return () => {
-      isMounted = false,
+      isMounted = false
       controller.abort()
     }
-  }, [navigate, location])
+  }, [navigate, axiosPrivate, location])
 
 
   // onChange function for searching name
@@ -388,7 +381,7 @@ function PostLists() {
                                         onClick={(ev) => {
                                           ev.preventDefault();
                                           setSortState("dsc");
-                                          sortFunc("dsc");
+                                          //sortFunc("dsc");
                                         }}
                                       >
                                         DESC
@@ -401,7 +394,7 @@ function PostLists() {
                                         onClick={(ev) => {
                                           ev.preventDefault();
                                           setSortState("asc");
-                                          sortFunc("asc");
+                                          //sortFunc("asc");
                                         }}
                                       >
                                         ASC

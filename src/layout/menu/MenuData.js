@@ -1,5 +1,3 @@
-import { Component } from "react";
-
 const menu = [
   {
     heading: "Content Management"
@@ -30,6 +28,10 @@ const menu = [
        {
         text: "Categories",
         link: "/dashboard/post/categories"
+       },
+       {
+        text: "Attributes",
+        link: "/dashboard/post/attributes"
        }
     ]
   },

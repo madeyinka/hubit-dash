@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Head from "../../../layout/head/Head";
 import Content from "../../../layout/content/Content";
-import Dropzone from "react-dropzone";
 import {
     DropdownMenu,
     DropdownToggle,
@@ -22,7 +21,6 @@ import {
     Icon,
     Button,
     Col,
-    UserAvatar,
     PaginationComponent,
     DataTable,
     DataTableBody,
@@ -66,7 +64,7 @@ function Categories() {
                 })
                 isMounted && setData(response.data.data.categories)
             } catch(e) {
-                if (e.response.status == 403) {
+                if (e.response.status === 403) {
                     navigate('/auth-login', { state: { from:location }, replace: true })
                 }
             }
@@ -77,11 +75,12 @@ function Categories() {
             isMounted = false
             controller.abort()
         }
-    },[navigate, location])
+    },[navigate, axiosPrivate, location])
 
     useEffect(() => {
          let isMounted = true, catList = []
          if (data && data.length > 0) {
+            // eslint-disable-next-line array-callback-return
             data.filter((item) => {
                 if(item.parent == null) {
                     isMounted && catList.push({value: item.id, label:item.label})
@@ -249,7 +248,7 @@ function Categories() {
                                     type="checkbox"
                                     className="custom-control-input form-control"
                                     id="pid-all"
-                                    onChange={(e) => selectorCheck(e)}
+                                   // onChange={(e) => selectorCheck(e)}
                                     />
                                     <label className="custom-control-label" htmlFor="pid-all"></label>
                                 </div>
@@ -312,7 +311,7 @@ function Categories() {
                                                 type="checkbox"
                                                 className="custom-control-input form-control"
                                                 id="pid-all"
-                                                onChange={(e) => selectorCheck(e)}
+                                               // onChange={(e) => selectorCheck(e)}
                                                 />
                                                 <label className="custom-control-label" htmlFor="pid-all"></label>
                                             </div>

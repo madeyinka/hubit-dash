@@ -1,4 +1,4 @@
-import { Redirect } from "react-router-dom";
+// import { Redirect } from "react-router-dom";
 import moment from "moment";
 
 //url for production
@@ -97,9 +97,13 @@ export const dateFormatter = (date, reverse, string) => {
 };
 
 export const momentFormat = (dateTime, type) => {
-  if (type == 'dmy') {
+  if (type === 'dmy') {
     return moment(dateTime).format("D MMM YYYY")
+  } 
+  if (type === 'DMY') {
+    return moment(dateTime).format("D MMMM YYYY")
   }
+  
 }
 
 //todays Date
