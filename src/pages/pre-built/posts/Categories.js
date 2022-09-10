@@ -597,15 +597,15 @@ function Categories() {
                                 <label className="form-label">Upload Image</label>
                                     <div className="input-group">
                                         <div className="custom-file">
-                                        <input
-                                            type="file"
-                                            className="custom-file-input"
-                                            id="inputGroupFile04"
-                                            onChange={handleImageInput}
-                                        />
-                                        <label className="custom-file-label" htmlFor="inputGroupFile04">
-                                           {selected === "" ? "Choose files" : selected}
-                                        </label>
+                                            <input
+                                                type="file"
+                                                className="custom-file-input"
+                                                id="inputGroupFile04"
+                                                onChange={handleImageInput}
+                                            />
+                                            <label className="custom-file-label" htmlFor="inputGroupFile04">
+                                                {selected === "" ? "Choose files" : selected}
+                                            </label>
                                         </div>
                                         <div className="input-group-append">
                                         <Button outline color="primary" onClick={uploadImage} className="btn-dim">

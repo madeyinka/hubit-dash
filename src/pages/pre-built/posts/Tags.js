@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Head from "../../../layout/head/Head";
 import Content from "../../../layout/content/Content";
-import { FormGroup, Label, Row } from "reactstrap";
+import { FormGroup, Row } from "reactstrap";
 import {
     DropdownMenu,
     DropdownToggle,
@@ -27,8 +27,7 @@ import {
     DataTableRow,
     DataTableItem,
     OverlineTitle,
-    PreviewCard,
-    RSelect,
+    PreviewCard
   } from "../../../components/Component";
   import { useForm } from "react-hook-form";
   import { v4 as uuidv4 } from "uuid"

@@ -10,6 +10,7 @@ import Categories from "../pages/pre-built/posts/Categories"
 import CreatePost from "../pages/pre-built/posts/CreatePost"
 import PostLists from "../pages/pre-built/posts/PostLists"
 import Attributes from "../pages/pre-built/posts/Tags"
+import UpdatePost from "../pages/pre-built/posts/UpdatePost"
 
 const Pages = () => {
   useLayoutEffect(() => {
@@ -25,6 +26,7 @@ const Pages = () => {
         <Route path="/components" element={<Components />} />
         <Route path="/post/categories" element={<Categories />} />
         <Route path="/post/add-new" element={<CreatePost />} />
+        <Route path="/post/edit/:id" element={<UpdatePost />} />
         <Route path="/post/attributes" element={<Attributes />} />
         <Route path="/post/list" element={<PostLists />} />
 

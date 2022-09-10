@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {useNavigate} from "react-router-dom"
+import {useNavigate, useParams} from "react-router-dom"
 import Content from "../../../layout/content/Content";
 import Head from "../../../layout/head/Head";
 import { FormGroup, Label, Row, Col } from "reactstrap";
@@ -19,28 +19,17 @@ import {
     RSelect
   } from "../../../components/Component";
   import { useForm } from "react-hook-form";
-  import { v4 as uuidv4 } from "uuid"
   import slugify from "slugify";
   import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-  const unique = require("array-unique")
+  //const unique = require("array-unique")
 
-function CreatePost() {
+function UpdatePost() {
     const axiosPrivate = useAxiosPrivate()
     const navigate = useNavigate()
-    const initial = {
-        title:"",
-        category:null,
-        type:null,
-        content:"",
-        media:"",
-        keywords:[],
-        author:"Admin",
-        meta_title:"",
-        meta_keywords:"",
-        meta_desc:"",
-        pub_date:Date.now()
-    }
-    const [formData, setFormData] = useState(initial)
+    const { id } = useParams()
+
+    //state manager
+    const [formData, setFormData] = useState({})
     const [defaultFiles, setDefaultFiles] = useState("")
     const [selected, setSelected] = useState('')
     const [imageUrl, setImageUrl] = useState('')
@@ -52,11 +41,12 @@ function CreatePost() {
     const [popular, setPopular] = useState(false)
     const [editor, setEditor] = useState(false)
 
+    const { errors, register, handleSubmit } = useForm();
+    //const unique = require("array-unique")
 
     useEffect(() => {
         let isMounted = true
         const controller = new AbortController()
-
         const getCategories = async () => {
             const response = await axiosPrivate.get('/category/pull', {
                 signal: controller.signal
@@ -70,78 +60,64 @@ function CreatePost() {
             }
         }
         getCategories()
-
         return () => {
             isMounted = false
             controller.abort()
         }
     }, [axiosPrivate])
 
-    const Types = [
-        {value:"Article", label:"Article"},
-        {value:"Podcast", label:"Podcast"},
-        {value:"Video", label:"Video"}
-    ]
+    //get formValue for selected item
+    useEffect(() => {
+        let isMounted = true
+        const controller = new AbortController()
+        const getPost = async () => {
+            const response = await axiosPrivate.get('/post/pull', {
+                signal:controller.signal
+            })
+            if (isMounted) {
+                const data = response.data?.data?.posts
+                data.forEach((item) => {
+                    if (item.id === id) {
+                        setFormData({
+                            title:item.title,
+                            category:item.category,
+                            type:item.type,
+                            short_content:item.short_content,
+                            content:item.content,
+                            keywords:item.keywords,
+                            author:item.author,
+                            meta_title:item.seo.meta_title,
+                            meta_keywords:item.seo.meta_keywords,
+                            meta_desc:item.seo.meta_description
 
-    const tags = [
-        {value:"Enugu", label:"Enugu"},
-        {value:"2023Election", label:"2023Election"}
-    ]
+                        })
+                        setImageUrl(item.image)
+                        setFeatured(item.post_settings.featured)
+                        setSlider(item.post_settings.slider)
+                        setPopular(item.post_settings.popular)
+                        setEditor(item.post_settings.editor)
+                        setFacebook(item.post_settings.facebook)
+                    }
+                })
+            }
+        }
+        getPost()
+        return () => {
+            isMounted = false
+            controller.abort()
+        }
+    },[id, axiosPrivate])
 
     // OnChange function to get the input data
     const onInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // 
-    const onFormSubmit = async () => { 
-        const {title, category, type, content} = formData
-        if (title === "" || content === "" || !category.value || !type.value) {
-            return
-        }
-        let submittedData = {
-            id:uuidv4(),
-            title:formData.title,
-            slug:slugify(formData.title, {lower:true}) + '-'+Date.now(),
-            category:formData.category,
-            type:formData.type,
-            content:formData.content,
-            short_content:formData.short_content,
-            image:imageUrl,
-            keywords:formData.keywords,
-            post_settings:{
-                featured:featured,
-                slider:slider,
-                popular:popular,
-                editor:editor,
-                facebook:facebook
-            },
-            seo:{
-                title:formData.meta_title,
-                keywords:unique(formData.meta_keywords.replace(" ","").split(",")),
-                description:formData.meta_desc
-            },
-            status:1,
-            author:formData.author,
-            pub_date:formData.pub_date
-        }
-        await axiosPrivate.post('/post/create', submittedData)
-        .then(resp => {
-            setFormData(initial)
-            setImageUrl('')
-            navigate("/dashboard/post/list")
-        })
-        .catch(err => {
-            console.log(err.response)
-        })
-    }
-
-    // handles ondrop function of dropzone
     const handleImageInput = (e) => {
         const file = e.target.files[0]
         base64Encode(file)
         setSelected(e.target.value)
-    };
+    }
 
     const base64Encode = (file) => {
         const reader = new FileReader()
@@ -166,24 +142,70 @@ function CreatePost() {
         }
     }
 
-    const { errors, register, handleSubmit } = useForm();
+    //post type options
+    const Types = [
+        {value:"Article", label:"Article"},
+        {value:"Podcast", label:"Podcast"},
+        {value:"Video", label:"Video"}
+    ]
+
+    //handle form submission
+    const onFormSubmit = async (sData) => {
+        const {title, category, type, content} = formData
+        if (title === "" || content === "" || !category.value || !type.value) {
+            return
+        }
+        let submittedData = {
+            id:id,
+            title:formData.title,
+            slug:slugify(formData.title, {lower:true}) + '-'+Date.now(),
+            category:formData.category,
+            type:formData.type,
+            content:formData.content,
+            short_content:formData.short_content,
+            image:imageUrl,
+            keywords:formData.keywords,
+            post_settings: {
+                featured:featured,
+                slider:slider,
+                popular:popular,
+                editor:editor,
+                facebook:facebook
+            },
+            seo:{
+                title:formData.meta_title,
+                //keywords:unique(formData.meta_keywords.replace(" ","").split(",")),
+                description:formData.meta_desc
+            },
+            status:1,
+            author:formData.author,
+            pub_date:formData.pub_date
+        }
+        await axiosPrivate.post('/post/update', submittedData)
+        .then(resp => {
+            setFormData(null)
+            setImageUrl('')
+            navigate("/dashboard/post/list")
+        })
+        .catch(err => console.log(err.response))
+    }
 
   return (
     <React.Fragment>
-      <Head title="Add Post" />
-      <Content>
+        <Head title="Update Post" />
+        <Content>
         <BlockHead size="sm">
-          <BlockBetween>
-            <BlockHeadContent>
-              <BlockTitle page>Add Post</BlockTitle>
-              <BlockDes className="text-soft">
-                <p>Create new post content</p>
-              </BlockDes>
-            </BlockHeadContent>
-            <BlockHeadContent>
-              
-            </BlockHeadContent>
-          </BlockBetween>
+            <BlockBetween>
+                <BlockHeadContent>
+                <BlockTitle page>Update Post</BlockTitle>
+                <BlockDes className="text-soft">
+                    <p>Edit post content</p>
+                </BlockDes>
+                </BlockHeadContent>
+                <BlockHeadContent>
+                
+                </BlockHeadContent>
+            </BlockBetween>
         </BlockHead>
         <Block size="lg">
             <Row className="g-gs">
@@ -205,6 +227,7 @@ function CreatePost() {
                                             type="text" 
                                             id="title" 
                                             name="title"
+                                            defaultValue={formData?.title}
                                             onChange={(e) => onInputChange(e)}
                                             placeholder="Enter Post Title" 
                                             ref={register({
@@ -218,16 +241,20 @@ function CreatePost() {
                             <Col md="6">
                                 <FormGroup>
                                     <label className="form-label">Category</label>
-                                    <RSelect 
+                                    <RSelect  
+                                        value={formData?.category}
+                                        onChange={(e) => setFormData({ ...formData, category: e })}
                                         options={catOptions} 
-                                        onChange={(e) => setFormData({ ...formData, category: e })} 
-                                        />
+                                    />
                                 </FormGroup>
                             </Col>
                             <Col md="6">
                                 <FormGroup>
                                     <label className="form-label">Type</label>
-                                    <RSelect options={Types} onChange={(e) => setFormData({ ...formData, type:e })} />
+                                    <RSelect 
+                                    options={Types} 
+                                    value={formData?.type}
+                                    onChange={(e) => setFormData({ ...formData, type:e })} />
                                 </FormGroup>
                             </Col>
                             <Col md="12">
@@ -241,6 +268,7 @@ function CreatePost() {
                                             type="text" 
                                             id="excerpt" 
                                             name="short_content"
+                                            defaultValue={formData?.short_content}
                                             onChange={(e) => onInputChange(e)}
                                             placeholder="short description of content" />
                                     </div>
@@ -256,31 +284,11 @@ function CreatePost() {
                                         onChange={(e) => setFormData({...formData, content:e})}
                                         modules={modules('t1')}
                                         formats={formats}
+                                        value={formData?.content}
                                         style={{ width: "100%", height: "100%" }}
                                     />
                                 </FormGroup>
                             </Col>
-                            {/* <Col md="12">
-                                <label className="form-label">Content</label>
-                                <Editor
-                                    onInit={(evt, editor) => (editorRef.current = editor)}
-                                    initialValue="<p></p>"
-                                    onEditorChange={(e) => setFormData({...formData, content:e})}
-                                    init={{
-                                        menubar: false,
-                                        plugins: [
-                                        "advlist autolink lists link image charmap print preview anchor",
-                                        "searchreplace visualblocks code fullscreen",
-                                        "insertdatetime media table paste code",
-                                        ],
-                                        toolbar:
-                                        "undo redo | formatselect | " +
-                                        "bold italic | alignleft aligncenter " +
-                                        "alignright alignjustify | outdent indent",
-                                    }}
-                                />
-                                {errors.content && <span className="invalid">{errors.content.message}</span>}
-                            </Col> */}
                         </Row>
                     </PreviewCard>
                     <PreviewCard>
@@ -288,9 +296,6 @@ function CreatePost() {
                         {" "}
                         Post Settings{" "}
                         </OverlineTitle>
-                        {/* <div className="card-head">
-                            <h5 className="card-title">MEDIA</h5>
-                        </div> */}
                         <Row className="g-3 align-center">
                             <Col lg="5">
                                 <FormGroup>
@@ -335,7 +340,7 @@ function CreatePost() {
                                         id="author"
                                         name="author"
                                         className="form-control"
-                                        defaultValue="Admin"
+                                        defaultValue={formData?.author}
                                         onChange={(e) => onInputChange(e)}
                                         placeholder="Post Author"
                                     />
@@ -355,9 +360,9 @@ function CreatePost() {
                             <Col lg="7">
                                 <FormGroup>
                                 <RSelect
-                                    options={tags}
+                                    options={[]}
                                     isMulti
-                                    defaultValue={formData.keywords}
+                                    defaultValue={formData?.keywords}
                                     onChange={(e) => setFormData({ ...formData, keywords: e })}
                                 />
                                 </FormGroup>
@@ -383,6 +388,7 @@ function CreatePost() {
                                         id="meta-title"
                                         name="meta_title"
                                         className="form-control"
+                                        defaultValue={formData?.seo?.meta_title}
                                         onChange={(e) => onInputChange(e)}
                                         placeholder="Meta title"
                                     />
@@ -407,6 +413,7 @@ function CreatePost() {
                                         id="meta-keywords"
                                         name="meta_keywords"
                                         className="form-control"
+                                        defaultValue={formData?.seo?.meta_keywords}
                                         onChange={(e) => onInputChange(e)}
                                         placeholder="Meta keywords"
                                     />
@@ -430,6 +437,7 @@ function CreatePost() {
                                             className="form-control form-control-sm"
                                             id="meta-description"
                                             name="meta_desc"
+                                            defaultValue={formData?.seo?.meta_desc}
                                             onChange={(e) => onInputChange(e)}
                                             placeholder="Meta Description (max: 300 characters)"
                                         ></textarea>
@@ -459,6 +467,7 @@ function CreatePost() {
                                         <input
                                             type="checkbox"
                                             className="custom-control-input form-control"
+                                            checked={featured}
                                             onChange={() => setFeatured(!featured)}
                                             id="featured"
                                         />
@@ -481,6 +490,7 @@ function CreatePost() {
                                         <input
                                             type="checkbox"
                                             className="custom-control-input form-control"
+                                            checked={slider}
                                             onChange={() => setSlider(!slider)}
                                             id="slider"
                                         />
@@ -503,6 +513,7 @@ function CreatePost() {
                                         <input
                                             type="checkbox"
                                             className="custom-control-input form-control"
+                                            checked={popular}
                                             onChange={() => setPopular(!popular)}
                                             id="popular"
                                         />
@@ -525,6 +536,7 @@ function CreatePost() {
                                         <input
                                             type="checkbox"
                                             className="custom-control-input form-control"
+                                            checked={editor}
                                             onChange={() => setEditor(!editor)}
                                             id="editor"
                                         />
@@ -550,6 +562,7 @@ function CreatePost() {
                                         <input
                                             type="checkbox"
                                             className="custom-control-input form-control"
+                                            checked={facebook}
                                             onChange={() => setFacebook(!facebook)}
                                             id="facebook"
                                         />
@@ -630,9 +643,9 @@ function CreatePost() {
                 </Col>
             </Row>
         </Block>
-      </Content>
+        </Content>
     </React.Fragment>
   )
 }
 
-export default CreatePost
+export default UpdatePost

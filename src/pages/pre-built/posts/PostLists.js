@@ -157,9 +157,9 @@ function PostLists() {
                 <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
                   <ul className="nk-block-tools g-3">
                     <li className="nk-block-tools-opt">
-                      <Button color="primary">
-                        <Icon name="plus"></Icon>
-                        <span>Add New</span>
+                      <Button onClick={(e) => {e.preventDefault(); navigate("/dashboard/post/add-new")}} color="primary">
+                          <Icon name="plus"></Icon>
+                          <span>Add New</span>
                       </Button>
                     </li>
                   </ul>
@@ -532,12 +532,13 @@ function PostLists() {
                                 </DropdownToggle>
                                 <DropdownMenu right>
                                   <ul className="link-list-opt no-bdr">
-                                    <li onClick={() => onEditClick(item.id)}>
+                                    <li>
                                         <DropdownItem
                                           tag="a"
                                           href="#edit"
                                           onClick={(ev) => {
                                             ev.preventDefault();
+                                            navigate("/dashboard/post/edit/"+item.id)
                                           }}
                                         >
                                         <Icon name="edit"></Icon>

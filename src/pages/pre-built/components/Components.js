@@ -257,7 +257,7 @@ function Components() {
                                                 type="checkbox"
                                                 className="custom-control-input form-control"
                                                 id="pid-all"
-                                                onChange={(e) => selectorCheck(e)}
+                                                //onChange={(e) => selectorCheck(e)}
                                                 />
                                                 <label className="custom-control-label" htmlFor="pid-all"></label>
                                             </div>
