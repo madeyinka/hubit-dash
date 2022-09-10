@@ -76,7 +76,6 @@ function UpdatePost() {
             })
             if (isMounted) {
                 const data = response.data?.data?.posts
-                console.log(data)
                 data.forEach((item) => {
                     if (item.id === id) {
                         setFormData({
@@ -184,7 +183,7 @@ function UpdatePost() {
         }
         await axiosPrivate.post('/post/update', submittedData)
         .then(resp => {
-            setFormData(null)
+           //setFormData(null)
             setImageUrl('')
             navigate("/dashboard/post/list")
         })
