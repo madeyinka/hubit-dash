@@ -242,7 +242,7 @@ function UpdatePost() {
                                 <FormGroup>
                                     <label className="form-label">Category</label>
                                     <RSelect  
-                                        value={formData?.category}
+                                        defaultValue={formData?.category}
                                         onChange={(e) => setFormData({ ...formData, category: e })}
                                         options={catOptions} 
                                     />
