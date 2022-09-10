@@ -178,7 +178,7 @@ function UpdatePost() {
                                         type="text" 
                                         id="excerpt" 
                                         name="short_content"
-                                        value={data.short_content}
+                                        defaultValue={data.short_content}
                                         onChange={(e) => onInputChange(e)}
                                         placeholder="short description of content" />
                                 </div>
