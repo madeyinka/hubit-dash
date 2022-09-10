@@ -76,6 +76,7 @@ function UpdatePost() {
             })
             if (isMounted) {
                 const data = response.data?.data?.posts
+                console.log(data)
                 data.forEach((item) => {
                     if (item.id === id) {
                         setFormData({
