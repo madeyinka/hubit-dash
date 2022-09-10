@@ -194,7 +194,7 @@ function UpdatePost() {
                                     onChange={(e) => setFormData({...formData, content:e})}
                                     modules={modules('t1')}
                                     formats={formats}
-                                    value={data.content}
+                                    value={data?.content}
                                     style={{ width: "100%", height: "100%" }}
                                 />
                             </FormGroup>
