@@ -48,7 +48,14 @@ function UpdatePost() {
                         setData({
                             title:item.title,
                             category:item.category,
-                            type:item.type
+                            type:item.type,
+                            short_content:item.short_content,
+                            content:item.content,
+                            keywords:item.keywords,
+                            author:item.author,
+                            meta_title:item.meta_title,
+                            meta_keywords:item.meta_keywords,
+                            meta_description:item.meta_description
                         })
                     }
                 })
@@ -59,7 +66,7 @@ function UpdatePost() {
             isMounted = false
             controller.abort()
         }
-    }, [])
+    }, [axiosPrivate, id])
 
     useEffect(() => {
                 let isMounted = true
@@ -81,7 +88,13 @@ function UpdatePost() {
                     isMounted = false
                     controller.abort()
                 }
-            }, [])
+            }, [axiosPrivate])
+    
+    const Types = [
+                {value:"Article", label:"Article"},
+                {value:"Podcast", label:"Podcast"},
+                {value:"Video", label:"Video"}
+            ]
 
     // OnChange function to get the input data
     const onInputChange = (e) => {
@@ -142,6 +155,48 @@ function UpdatePost() {
                                     options={catOptions} 
                                     value={data.category}
                                     onChange={(e) => setFormData({ ...formData, category: e })} 
+                                />
+                            </FormGroup>
+                        </Col>
+                        <Col md="6">
+                            <FormGroup>
+                                <label className="form-label">Type</label>
+                                <RSelect 
+                                    options={Types} 
+                                    value={data.type}
+                                    onChange={(e) => setFormData({ ...formData, type:e })} 
+                                />
+                            </FormGroup>
+                        </Col>
+                        <Col md="12">
+                            <FormGroup>
+                                <Label htmlFor="excerpt" className="form-label">
+                                    Excerpt
+                                </Label>
+                                <div className="form-control-wrap">
+                                    <input 
+                                        className="form-control" 
+                                        type="text" 
+                                        id="excerpt" 
+                                        name="short_content"
+                                        value={data.short_content}
+                                        onChange={(e) => onInputChange(e)}
+                                        placeholder="short description of content" />
+                                </div>
+                            </FormGroup>
+                        </Col>
+                        <Col md="12">
+                            <FormGroup>
+                                <label className="form-label">Content</label>
+                                <EditorToolbar toolbarId={'t1'}/>
+                                <ReactQuill 
+                                    theme="snow"
+                                    placeholder="Text editor content..."
+                                    onChange={(e) => setFormData({...formData, content:e})}
+                                    modules={modules('t1')}
+                                    formats={formats}
+                                    value={data.content}
+                                    style={{ width: "100%", height: "100%" }}
                                 />
                             </FormGroup>
                         </Col>
