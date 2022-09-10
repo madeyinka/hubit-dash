@@ -21,7 +21,6 @@ import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
 import {useParams} from 'react-router-dom'
-import { axiosPrivate } from '../../../hooks/noAuth';
 
 function UpdatePost() {
     const { id } = useParams()
