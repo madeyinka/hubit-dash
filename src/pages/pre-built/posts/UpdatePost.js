@@ -227,7 +227,7 @@ function UpdatePost() {
                                             type="text" 
                                             id="title" 
                                             name="title"
-                                            defaultValue={formData?.title}
+                                            value={formData?.title}
                                             onChange={(e) => onInputChange(e)}
                                             placeholder="Enter Post Title" 
                                             ref={register({
@@ -268,7 +268,7 @@ function UpdatePost() {
                                             type="text" 
                                             id="excerpt" 
                                             name="short_content"
-                                            defaultValue={formData?.short_content}
+                                            value={formData?.short_content}
                                             onChange={(e) => onInputChange(e)}
                                             placeholder="short description of content" />
                                     </div>
@@ -340,7 +340,7 @@ function UpdatePost() {
                                         id="author"
                                         name="author"
                                         className="form-control"
-                                        defaultValue={formData?.author}
+                                        value={formData?.author}
                                         onChange={(e) => onInputChange(e)}
                                         placeholder="Post Author"
                                     />
@@ -362,7 +362,7 @@ function UpdatePost() {
                                 <RSelect
                                     options={[]}
                                     isMulti
-                                    defaultValue={formData?.keywords}
+                                    value={formData?.keywords}
                                     onChange={(e) => setFormData({ ...formData, keywords: e })}
                                 />
                                 </FormGroup>
@@ -388,7 +388,7 @@ function UpdatePost() {
                                         id="meta-title"
                                         name="meta_title"
                                         className="form-control"
-                                        defaultValue={formData?.seo?.meta_title}
+                                        value={formData?.seo?.meta_title}
                                         onChange={(e) => onInputChange(e)}
                                         placeholder="Meta title"
                                     />
@@ -413,7 +413,7 @@ function UpdatePost() {
                                         id="meta-keywords"
                                         name="meta_keywords"
                                         className="form-control"
-                                        defaultValue={formData?.seo?.meta_keywords}
+                                        value={formData?.seo?.meta_keywords}
                                         onChange={(e) => onInputChange(e)}
                                         placeholder="Meta keywords"
                                     />
@@ -437,7 +437,7 @@ function UpdatePost() {
                                             className="form-control form-control-sm"
                                             id="meta-description"
                                             name="meta_desc"
-                                            defaultValue={formData?.seo?.meta_desc}
+                                            value={formData?.seo?.meta_desc}
                                             onChange={(e) => onInputChange(e)}
                                             placeholder="Meta Description (max: 300 characters)"
                                         ></textarea>
