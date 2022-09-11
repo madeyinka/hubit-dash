@@ -42,7 +42,7 @@ function UpdatePost() {
     const [data, setData] = useState({})
     const [formData, setFormData] = useState(initial)
     const [catOptions, setCatOptions] = useState()
-    //const [content, setContent] = useState("")
+    const [content, setContent] = useState("")
 
     const { errors, register, handleSubmit } = useForm();
 
@@ -63,13 +63,13 @@ function UpdatePost() {
                             category:item.category,
                             type:item.type,
                             short_content:item.short_content,
-                            content:item.content,
                             keywords:item.keywords,
                             author:item.author,
                             meta_title:item.meta_title,
                             meta_keywords:item.meta_keywords,
                             meta_description:item.meta_description
                         })
+                        setContent(item.content)
                     }
                 })
             }
@@ -204,9 +204,9 @@ function UpdatePost() {
                                 <EditorToolbar toolbarId={'t1'}/>
                                 <ReactQuill 
                                     theme="snow"
-                                    value={data.content}
+                                    value={content}
                                     placeholder="Text editor content..."
-                                    onChange={(e) => setFormData({ ...formData, content:e })}
+                                    onChange={(e) => setContent(e)}
                                     modules={modules('t1')}
                                     formats={formats}
                                     style={{ width: "100%", height: "100%" }}
