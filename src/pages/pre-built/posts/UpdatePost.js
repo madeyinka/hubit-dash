@@ -26,10 +26,23 @@ function UpdatePost() {
     const { id } = useParams()
     const axiosPrivate = useAxiosPrivate()
 
+    const initial = {
+        title:"",
+        category:null,
+        type:null,
+        content:"",
+        media:"",
+        keywords:[],
+        author:"Admin",
+        meta_title:"",
+        meta_keywords:"",
+        meta_desc:"",
+        pub_date:Date.now()
+    }
     const [data, setData] = useState({})
-    const [formData, setFormData] = useState({})
+    const [formData, setFormData] = useState(initial)
     const [catOptions, setCatOptions] = useState()
-    const [content, setContent] = useState("")
+    //const [content, setContent] = useState("")
 
     const { errors, register, handleSubmit } = useForm();
 
@@ -100,10 +113,6 @@ function UpdatePost() {
     const onInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-
-    const handleEditorChange = (html) => {
-        setFormData({...formData, content:html})
-    }
 
   return (
     <React.Fragment>
@@ -197,7 +206,7 @@ function UpdatePost() {
                                     theme="snow"
                                     value={content}
                                     placeholder="Text editor content..."
-                                    onChange={(e) => setContent(e)}
+                                    onChange={(e) => setFormData({ ...formData, content:e })}
                                     modules={modules('t1')}
                                     formats={formats}
                                     style={{ width: "100%", height: "100%" }}
@@ -205,6 +214,9 @@ function UpdatePost() {
                             </FormGroup>
                         </Col>
                     </Row>
+                    </PreviewCard>
+                    <PreviewCard>
+
                     </PreviewCard>
                 </Col>
                 <Col lg="4">
