@@ -100,8 +100,8 @@ function UpdatePost() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleEditorChange = (e) => {
-        setFormData({...formData, content:e})
+    const handleEditorChange = (html) => {
+        setFormData({...formData, content:html})
     }
 
   return (
@@ -195,7 +195,7 @@ function UpdatePost() {
                                 <ReactQuill 
                                     theme="snow"
                                     placeholder="Text editor content..."
-                                    onChange={(e) => handleEditorChange(e)}
+                                    onChange={handleEditorChange}
                                     modules={modules('t1')}
                                     formats={formats}
                                     value={data?.content}
