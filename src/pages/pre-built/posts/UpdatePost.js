@@ -194,11 +194,11 @@ function UpdatePost() {
                                 <EditorToolbar toolbarId={'t1'}/>
                                 <ReactQuill 
                                     theme="snow"
+                                    defaultValue={data?.content}
                                     placeholder="Text editor content..."
-                                    onChange={handleEditorChange}
+                                    onChange={(e) => setFormData({...formData, content:e})}
                                     modules={modules('t1')}
                                     formats={formats}
-                                    value={data?.content}
                                     style={{ width: "100%", height: "100%" }}
                                 />
                             </FormGroup>
