@@ -63,13 +63,13 @@ function UpdatePost() {
                             category:item.category,
                             type:item.type,
                             short_content:item.short_content,
+                            content:item.content,
                             keywords:item.keywords,
                             author:item.author,
                             meta_title:item.meta_title,
                             meta_keywords:item.meta_keywords,
                             meta_description:item.meta_description
                         })
-                        setContent(item.content)
                     }
                 })
             }
@@ -204,7 +204,7 @@ function UpdatePost() {
                                 <EditorToolbar toolbarId={'t1'}/>
                                 <ReactQuill 
                                     theme="snow"
-                                    value={content}
+                                    value={data.content}
                                     placeholder="Text editor content..."
                                     onChange={(e) => setFormData({ ...formData, content:e })}
                                     modules={modules('t1')}
