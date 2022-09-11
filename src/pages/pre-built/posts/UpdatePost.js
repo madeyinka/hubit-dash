@@ -194,7 +194,7 @@ function UpdatePost() {
                                 <EditorToolbar toolbarId={'t1'}/>
                                 <ReactQuill 
                                     theme="snow"
-                                    defaultValue={data?.content}
+                                    value={data?.content}
                                     placeholder="Text editor content..."
                                     onChange={(e) => setFormData({...formData, content:e})}
                                     modules={modules('t1')}
