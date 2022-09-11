@@ -191,7 +191,7 @@ function UpdatePost() {
                                 <ReactQuill 
                                     theme="snow"
                                     placeholder="Text editor content..."
-                                    //onChange={(e) => setFormData({...formData, content:e})}
+                                    onChange={(e) => setFormData({...formData, content:e})}
                                     modules={modules('t1')}
                                     formats={formats}
                                     value={data?.content}
