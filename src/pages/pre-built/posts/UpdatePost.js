@@ -64,6 +64,7 @@ function UpdatePost() {
                             type:item.type,
                             short_content:item.short_content,
                             keywords:item.keywords,
+                            content:item.content,
                             author:item.author,
                             meta_title:item.meta_title,
                             meta_keywords:item.meta_keywords,
