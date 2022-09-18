@@ -18,31 +18,26 @@ import {
     RSelect
 } from "../../../components/Component";
 import { useForm } from "react-hook-form";
-import slugify from "slugify";
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate";
-import {useParams} from 'react-router-dom'
+import {useParams, useNavigate} from 'react-router-dom'
 
 function UpdatePost() {
     const { id } = useParams()
+    const navigate = useNavigate()
     const axiosPrivate = useAxiosPrivate()
-
-    const initial = {
-        title:"",
-        category:null,
-        type:null,
-        content:"",
-        media:"",
-        keywords:[],
-        author:"Admin",
-        meta_title:"",
-        meta_keywords:"",
-        meta_desc:"",
-        pub_date:Date.now()
-    }
     const [data, setData] = useState({})
-    const [formData, setFormData] = useState(initial)
+    const [formData, setFormData] = useState()
     const [catOptions, setCatOptions] = useState()
-    const [content, setContent] = useState("")
+    const [content, setContent] = useState('')
+    const [featured, setFeatured] = useState(false)
+    const [facebook, setFacebook] = useState(false)
+    const [slider, setSlider] = useState(false)
+    const [popular, setPopular] = useState(false)
+    const [editor, setEditor] = useState(false)
+    const [selected, setSelected] = useState('')
+    const [imageUrl, setImageUrl] = useState('')
+    const [imagePreview, setImagePreview] = useState('')
+    const [defaultFiles, setDefaultFiles] = useState("")
 
     const { errors, register, handleSubmit } = useForm();
 
@@ -64,13 +59,18 @@ function UpdatePost() {
                             type:item.type,
                             short_content:item.short_content,
                             keywords:item.keywords,
-                            content:item.content,
                             author:item.author,
-                            meta_title:item.meta_title,
-                            meta_keywords:item.meta_keywords,
-                            meta_description:item.meta_description
+                            meta_title:item.seo.title,
+                            meta_keywords:item.seo.keywords,
+                            meta_desc:item.seo.description
                         })
                         setContent(item.content)
+                        setPopular(item.post_settings.popular)
+                        setFeatured(item.post_settings.featured)
+                        setSlider(item.post_settings.slider)
+                        setEditor(item.post_settings.editor)
+                        setFacebook(item.post_settings.facebook)
+                        setImageUrl(item.image)
                     }
                 })
             }
@@ -115,6 +115,70 @@ function UpdatePost() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const handleImageInput = (e) => {
+        const file = e.target.files[0]
+        base64Encode(file)
+        setSelected(e.target.value)
+    }
+
+    const base64Encode = (file) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onloadend = () => {
+            setImagePreview(reader.result)
+        }
+    }
+
+    const uploadImage = async (e) => {
+        e.preventDefault()
+        if (!imagePreview) return;
+        const data = {data:imagePreview}
+        try {
+            await axiosPrivate.post('/assets/upload-to-cloud', data)
+            .then(response => {
+                setSelected('')
+                setImageUrl(response.data.url)
+            })
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const onFormSubmit = async () => {
+        let submittedData = {
+            id:id,
+            title: formData?.title ? formData.title : data.title,
+            category: formData?.category ? formData.category : data.category,
+            type: formData?.type ? formData.type : data.type,
+            short_content: formData?.short_content ? formData.short_content : data.short_content,
+            content: formData?.content ? formData.content : content,
+            keywords:formData?.keywords ? formData.keyword : data.keywords,
+            author: formData?.author ? formData.author : data.author,
+            image: imageUrl,
+            post_settings:{
+                featured:featured,
+                slider:slider,
+                popular:popular,
+                editor:editor,
+                facebook:facebook
+            },
+            seo:{
+                title: formData?.meta_title ? formData.meta_title : data.meta_title,
+                keywords: formData?.meta_keywords ? formData.meta_keywords : data.meta_keywords,
+                description: formData?.meta_desc ? formData.meta_desc : data.meta_desc
+            },
+            status:1,
+            pub_date:formData.pub_date,
+            date_modified:Date.now()
+        }
+        await axiosPrivate.post('/post/update', submittedData)
+        .then(resp => {
+            setImageUrl('')
+            setFormData(null)
+            navigate("/dashboard/post/list")
+        })
+    }
+
   return (
     <React.Fragment>
         <Head title="Update Post" />
@@ -151,7 +215,7 @@ function UpdatePost() {
                                         id="title" 
                                         className="form-control" 
                                         name="title"
-                                        value={data.title}
+                                        defaultValue={data.title}
                                         onChange={(e) => onInputChange(e)}
                                         placeholder="Enter Post Title" 
                                         ref={register({
@@ -163,24 +227,24 @@ function UpdatePost() {
                             </FormGroup>
                         </Col>
                         <Col md="6">
-                            <FormGroup>
+                            {data.category && <FormGroup>
                                 <label className="form-label">Category</label>
                                 <RSelect 
                                     options={catOptions} 
-                                    value={data.category}
+                                    defaultValue={data.category}
                                     onChange={(e) => setFormData({ ...formData, category: e })} 
                                 />
-                            </FormGroup>
+                            </FormGroup>}
                         </Col>
                         <Col md="6">
-                            <FormGroup>
+                            {data.type && <FormGroup>
                                 <label className="form-label">Type</label>
                                 <RSelect 
                                     options={Types} 
-                                    value={data.type}
+                                    defaultValue={data.type}
                                     onChange={(e) => setFormData({ ...formData, type:e })} 
                                 />
-                            </FormGroup>
+                            </FormGroup>}
                         </Col>
                         <Col md="12">
                             <FormGroup>
@@ -207,21 +271,363 @@ function UpdatePost() {
                                     theme="snow"
                                     value={content}
                                     placeholder="Text editor content..."
-                                    onChange={(e) => setContent(e)}
+                                    onChange={(e) => {setContent(e); setFormData({...formData, "content":e})}}
                                     modules={modules('t1')}
                                     formats={formats}
-                                    style={{ width: "100%", height: "100%" }}
+                                    style={{ width: "100%", height: "250px" }}
                                 />
                             </FormGroup>
                         </Col>
                     </Row>
                     </PreviewCard>
                     <PreviewCard>
-
+                    <OverlineTitle tag="span" className="preview-title-lg mb-3">
+                        Post Settings{" "}
+                    </OverlineTitle>
+                    <Row className="g-3 align-center">
+                        <Col lg="5">
+                            <FormGroup>
+                                <label className="form-label" htmlFor="media">
+                                    Add Media
+                                </label>
+                                <span className="form-note">Select/Add file to be uploaded.</span>
+                            </FormGroup>
+                        </Col>
+                        <Col md="7">
+                            <div className="form-group">
+                                <div className="form-control-wrap">
+                                    <div className="custom-file">
+                                        <input
+                                            type="file"
+                                            className="custom-file-input"
+                                            id="customFile"
+                                            onChange={(e) => setDefaultFiles()}
+                                        />
+                                        <label className="custom-file-label" htmlFor="customFile">
+                                            {defaultFiles === "" ? "Choose files" : defaultFiles}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </Col> 
+                    </Row>
+                    <Row className="g-3 align-center">
+                        <Col md="5">
+                            <FormGroup>
+                                <label className="form-label" htmlFor="author">
+                                    Post Author
+                                </label>
+                                <span className="form-note">Specify the name of author.</span>
+                            </FormGroup>
+                        </Col>
+                        <Col lg="7">
+                            <FormGroup>
+                                <div className="form-control-wrap">
+                                    <input
+                                        type="text"
+                                        id="author"
+                                        name="author"
+                                        className="form-control"
+                                        value={data.author}
+                                        onChange={(e) => onInputChange(e)}
+                                        placeholder="Post Author"
+                                    />
+                                </div>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    <Row className="g-3 align-center">
+                        <Col md="5">
+                            <FormGroup>
+                                <label className="form-label" htmlFor="keywords">
+                                    Post Tags
+                                </label>
+                                <span className="form-note">Select post tags </span>
+                            </FormGroup>
+                        </Col>
+                        <Col lg="7">
+                            <FormGroup>
+                                <RSelect
+                                    options={[]}
+                                    isMulti
+                                    value={data.keywords}
+                                    onChange={(e) => setFormData({ ...formData, keywords: e })}
+                                />
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    <div className="card-head mt-3">
+                        <h5 className="card-title">SEO</h5>
+                    </div>
+                    <Row className="g-3 align-center">
+                        <Col lg="5">
+                            <FormGroup>
+                                <label className="form-label" htmlFor="meta-title">
+                                    Meta Title
+                                </label>
+                                <span className="form-note">Provide meta title for post.</span>
+                            </FormGroup>
+                        </Col>
+                        <Col lg="7">
+                            <FormGroup>
+                                <div className="form-control-wrap">
+                                    <input
+                                        type="text"
+                                        id="meta-title"
+                                        name="meta_title"
+                                        className="form-control"
+                                        defaultValue={data.meta_title}
+                                        onChange={(e) => onInputChange(e)}
+                                        placeholder="Meta title"
+                                    />
+                                </div>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    <Row className="g-3 align-center">
+                        <Col lg="5">
+                            <FormGroup>
+                                <label className="form-label" htmlFor="meta-keywords">
+                                    Meta Keywords
+                                </label>
+                                <span className="form-note">Provide meta keywords for post.</span>
+                            </FormGroup>
+                        </Col>
+                        <Col lg="7">
+                            <FormGroup>
+                                <div className="form-control-wrap">
+                                    <input
+                                        type="text"
+                                        id="meta-keywords"
+                                        name="meta_keywords"
+                                        className="form-control"
+                                        defaultValue={data.meta_keywords}
+                                        onChange={(e) => onInputChange(e)}
+                                        placeholder="Meta keywords"
+                                    />
+                                </div>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    <Row className="g-3 align-center">
+                        <Col lg="5">
+                            <FormGroup>
+                                <label className="form-label" htmlFor="meta-description">
+                                    Meta Description
+                                </label>
+                                <span className="form-note">Provide meta description for post.</span>
+                            </FormGroup>
+                        </Col>
+                        <Col lg="7">
+                            <FormGroup>
+                                <div className="form-control-wrap">
+                                    <textarea
+                                        className="form-control form-control-sm"
+                                        id="meta-description"
+                                        name="meta_desc"
+                                        defaultValue={data.meta_desc}
+                                        onChange={(e) => onInputChange(e)}
+                                        placeholder="Meta Description (max: 300 characters)"
+                                    ></textarea>
+                                </div>
+                            </FormGroup>
+                        </Col>
+                    </Row>
                     </PreviewCard>
                 </Col>
                 <Col lg="4">
-
+                    <Block size="md">
+                        <PreviewCard>
+                            <OverlineTitle tag="span" className="preview-title-lg mb-3">
+                            Attributes{" "}
+                            </OverlineTitle>
+                            <Row className="g-3">
+                                <Col lg="5">
+                                    <FormGroup>
+                                        <label className="form-label" htmlFor="featured">
+                                        Featured
+                                        </label>
+                                    </FormGroup>
+                                </Col>
+                                <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                                    <FormGroup>
+                                        <div className="custom-control custom-switch">
+                                        <input
+                                            type="checkbox"
+                                            className="custom-control-input form-control"
+                                            checked={featured}
+                                            onChange={() => {setFeatured(!featured); setFormData({...formData, "featured":!featured})}}
+                                            id="featured"
+                                        />
+                                        <label className="custom-control-label" htmlFor="featured"></label>
+                                        </div>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row className="g-3">
+                                <Col lg="5">
+                                    <FormGroup>
+                                        <label className="form-label" htmlFor="slider">
+                                        Slider
+                                        </label>
+                                    </FormGroup>
+                                </Col>
+                                <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                                    <FormGroup>
+                                        <div className="custom-control custom-switch">
+                                        <input
+                                            type="checkbox"
+                                            className="custom-control-input form-control"
+                                            checked={slider}
+                                            onChange={() => {setSlider(!slider); setFormData({...formData, "slider":!slider})}}
+                                            id="slider"
+                                        />
+                                        <label className="custom-control-label" htmlFor="slider"></label>
+                                        </div>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row className="g-3">
+                                <Col lg="5">
+                                    <FormGroup>
+                                        <label className="form-label" htmlFor="popular">
+                                        Popular
+                                        </label>
+                                    </FormGroup>
+                                </Col>
+                                <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                                    <FormGroup>
+                                        <div className="custom-control custom-switch">
+                                        <input
+                                            type="checkbox"
+                                            className="custom-control-input form-control"
+                                            checked={popular}
+                                            onChange={() => {setPopular(!popular); setFormData({...formData, "popular":!popular})}}
+                                            id="popular"
+                                        />
+                                        <label className="custom-control-label" htmlFor="popular"></label>
+                                        </div>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <Row className="g-3">
+                                <Col lg="5">
+                                    <FormGroup>
+                                        <label className="form-label" htmlFor="editor">
+                                        Editor
+                                        </label>
+                                    </FormGroup>
+                                </Col>
+                                <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                                    <FormGroup>
+                                        <div className="custom-control custom-switch">
+                                        <input
+                                            type="checkbox"
+                                            className="custom-control-input form-control"
+                                            checked={editor}
+                                            onChange={() => {setEditor(!editor); setFormData({...formData, "editor":!editor})}}
+                                            id="editor"
+                                        />
+                                        <label className="custom-control-label" htmlFor="editor"></label>
+                                        </div>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <OverlineTitle tag="span" className="preview-title-lg mt-3">
+                                Socials{" "}
+                            </OverlineTitle>
+                            <Row className="g-3">
+                                <Col lg="5">
+                                    <FormGroup>
+                                        <label className="form-label" htmlFor="facebook">
+                                        Facebook
+                                        </label>
+                                    </FormGroup>
+                                </Col>
+                                <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                                    <FormGroup>
+                                        <div className="custom-control custom-switch">
+                                        <input
+                                            type="checkbox"
+                                            className="custom-control-input form-control"
+                                            checked={facebook}
+                                            onChange={() => {setFacebook(!facebook); setFormData({...formData, "facebook":!facebook})}}
+                                            id="facebook"
+                                        />
+                                        <label className="custom-control-label" htmlFor="facebook"></label>
+                                        </div>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            {/* <Row className="g-3">
+                                <Col lg="5">
+                                    <FormGroup>
+                                        <label className="form-label" htmlFor="twitter">
+                                        Twitter
+                                        </label>
+                                    </FormGroup>
+                                </Col>
+                                <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                                    <FormGroup>
+                                        <div className="custom-control custom-switch">
+                                        <input
+                                            type="checkbox"
+                                            className="custom-control-input form-control"
+                                            onChange={() => setTwitter(!twitter)}
+                                            id="facebook"
+                                        />
+                                        <label className="custom-control-label" htmlFor="twitter"></label>
+                                        </div>
+                                    </FormGroup>
+                                </Col>
+                            </Row> */}
+                    
+                            <Row className="mt-4">
+                                <Col xl="12">
+                                    <Button color="primary" size="md" onClick={handleSubmit(onFormSubmit)}>
+                                        Publish
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </PreviewCard>
+                        <PreviewCard>
+                            <OverlineTitle tag="span" className="preview-title-lg">
+                                Cover Image{" "}
+                            </OverlineTitle>
+                            <Row size="12">
+                                <Col>
+                                    <img src={imageUrl ? imageUrl : "https://react.dashlite.net/demo1/static/media/b.ab88cd7174e0ef667479.jpg"} alt="preview" />
+                                </Col>
+                            </Row>
+                            <Row size="12">
+                                <Col size="6">
+                                    <div className="form-control-wrap mt-3">
+                                        <label className="form-label">Upload Image</label>
+                                        <div className="input-group">
+                                            <div className="custom-file">
+                                            <input
+                                                type="file"
+                                                className="custom-file-input"
+                                                id="inputGroupFile04"
+                                                onChange={handleImageInput}
+                                            />
+                                            <label className="custom-file-label" htmlFor="inputGroupFile04">
+                                            {selected === "" ? "Choose files" : selected}
+                                            </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <Row className="mt-4">
+                                <Col xl="12">
+                                    <Button color="primary" size="md" onClick={uploadImage}>
+                                        Upload
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </PreviewCard>
+                    </Block>
                 </Col>
             </Row>
          </Block>
@@ -685,200 +1091,200 @@ export default UpdatePost
 //                         </Row>
 //                     </PreviewCard>
 //                 </Col>
-//                 <Col lg="4">
-//                     <Block size="md">
-//                         <PreviewCard>
-//                             <OverlineTitle tag="span" className="preview-title-lg mb-3">
-//                             Attributes{" "}
-//                             </OverlineTitle>
-//                             <Row className="g-3">
-//                                 <Col lg="5">
-//                                     <FormGroup>
-//                                         <label className="form-label" htmlFor="featured">
-//                                         Featured
-//                                         </label>
-//                                     </FormGroup>
-//                                 </Col>
-//                                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
-//                                     <FormGroup>
-//                                         <div className="custom-control custom-switch">
-//                                         <input
-//                                             type="checkbox"
-//                                             className="custom-control-input form-control"
-//                                             checked={featured}
-//                                             onChange={() => setFeatured(!featured)}
-//                                             id="featured"
-//                                         />
-//                                         <label className="custom-control-label" htmlFor="featured"></label>
-//                                         </div>
-//                                     </FormGroup>
-//                                 </Col>
-//                             </Row>
-//                             <Row className="g-3">
-//                                 <Col lg="5">
-//                                     <FormGroup>
-//                                         <label className="form-label" htmlFor="slider">
-//                                         Slider
-//                                         </label>
-//                                     </FormGroup>
-//                                 </Col>
-//                                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
-//                                     <FormGroup>
-//                                         <div className="custom-control custom-switch">
-//                                         <input
-//                                             type="checkbox"
-//                                             className="custom-control-input form-control"
-//                                             checked={slider}
-//                                             onChange={() => setSlider(!slider)}
-//                                             id="slider"
-//                                         />
-//                                         <label className="custom-control-label" htmlFor="slider"></label>
-//                                         </div>
-//                                     </FormGroup>
-//                                 </Col>
-//                             </Row>
-//                             <Row className="g-3">
-//                                 <Col lg="5">
-//                                     <FormGroup>
-//                                         <label className="form-label" htmlFor="popular">
-//                                         Popular
-//                                         </label>
-//                                     </FormGroup>
-//                                 </Col>
-//                                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
-//                                     <FormGroup>
-//                                         <div className="custom-control custom-switch">
-//                                         <input
-//                                             type="checkbox"
-//                                             className="custom-control-input form-control"
-//                                             checked={popular}
-//                                             onChange={() => setPopular(!popular)}
-//                                             id="popular"
-//                                         />
-//                                         <label className="custom-control-label" htmlFor="popular"></label>
-//                                         </div>
-//                                     </FormGroup>
-//                                 </Col>
-//                             </Row>
-//                             <Row className="g-3">
-//                                 <Col lg="5">
-//                                     <FormGroup>
-//                                         <label className="form-label" htmlFor="editor">
-//                                         Editor
-//                                         </label>
-//                                     </FormGroup>
-//                                 </Col>
-//                                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
-//                                     <FormGroup>
-//                                         <div className="custom-control custom-switch">
-//                                         <input
-//                                             type="checkbox"
-//                                             className="custom-control-input form-control"
-//                                             checked={editor}
-//                                             onChange={() => setEditor(!editor)}
-//                                             id="editor"
-//                                         />
-//                                         <label className="custom-control-label" htmlFor="editor"></label>
-//                                         </div>
-//                                     </FormGroup>
-//                                 </Col>
-//                             </Row>
-//                             <OverlineTitle tag="span" className="preview-title-lg mt-3">
-//                                 Socials{" "}
-//                             </OverlineTitle>
-//                             <Row className="g-3">
-//                                 <Col lg="5">
-//                                     <FormGroup>
-//                                         <label className="form-label" htmlFor="facebook">
-//                                         Facebook
-//                                         </label>
-//                                     </FormGroup>
-//                                 </Col>
-//                                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
-//                                     <FormGroup>
-//                                         <div className="custom-control custom-switch">
-//                                         <input
-//                                             type="checkbox"
-//                                             className="custom-control-input form-control"
-//                                             checked={facebook}
-//                                             onChange={() => setFacebook(!facebook)}
-//                                             id="facebook"
-//                                         />
-//                                         <label className="custom-control-label" htmlFor="facebook"></label>
-//                                         </div>
-//                                     </FormGroup>
-//                                 </Col>
-//                             </Row>
-//                             {/* <Row className="g-3">
-//                                 <Col lg="5">
-//                                     <FormGroup>
-//                                         <label className="form-label" htmlFor="twitter">
-//                                         Twitter
-//                                         </label>
-//                                     </FormGroup>
-//                                 </Col>
-//                                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
-//                                     <FormGroup>
-//                                         <div className="custom-control custom-switch">
-//                                         <input
-//                                             type="checkbox"
-//                                             className="custom-control-input form-control"
-//                                             onChange={() => setTwitter(!twitter)}
-//                                             id="facebook"
-//                                         />
-//                                         <label className="custom-control-label" htmlFor="twitter"></label>
-//                                         </div>
-//                                     </FormGroup>
-//                                 </Col>
-//                             </Row> */}
+                // <Col lg="4">
+                //     <Block size="md">
+                //         <PreviewCard>
+                //             <OverlineTitle tag="span" className="preview-title-lg mb-3">
+                //             Attributes{" "}
+                //             </OverlineTitle>
+                //             <Row className="g-3">
+                //                 <Col lg="5">
+                //                     <FormGroup>
+                //                         <label className="form-label" htmlFor="featured">
+                //                         Featured
+                //                         </label>
+                //                     </FormGroup>
+                //                 </Col>
+                //                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                //                     <FormGroup>
+                //                         <div className="custom-control custom-switch">
+                //                         <input
+                //                             type="checkbox"
+                //                             className="custom-control-input form-control"
+                //                             checked={featured}
+                //                             onChange={() => setFeatured(!featured)}
+                //                             id="featured"
+                //                         />
+                //                         <label className="custom-control-label" htmlFor="featured"></label>
+                //                         </div>
+                //                     </FormGroup>
+                //                 </Col>
+                //             </Row>
+                //             <Row className="g-3">
+                //                 <Col lg="5">
+                //                     <FormGroup>
+                //                         <label className="form-label" htmlFor="slider">
+                //                         Slider
+                //                         </label>
+                //                     </FormGroup>
+                //                 </Col>
+                //                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                //                     <FormGroup>
+                //                         <div className="custom-control custom-switch">
+                //                         <input
+                //                             type="checkbox"
+                //                             className="custom-control-input form-control"
+                //                             checked={slider}
+                //                             onChange={() => setSlider(!slider)}
+                //                             id="slider"
+                //                         />
+                //                         <label className="custom-control-label" htmlFor="slider"></label>
+                //                         </div>
+                //                     </FormGroup>
+                //                 </Col>
+                //             </Row>
+                //             <Row className="g-3">
+                //                 <Col lg="5">
+                //                     <FormGroup>
+                //                         <label className="form-label" htmlFor="popular">
+                //                         Popular
+                //                         </label>
+                //                     </FormGroup>
+                //                 </Col>
+                //                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                //                     <FormGroup>
+                //                         <div className="custom-control custom-switch">
+                //                         <input
+                //                             type="checkbox"
+                //                             className="custom-control-input form-control"
+                //                             checked={popular}
+                //                             onChange={() => setPopular(!popular)}
+                //                             id="popular"
+                //                         />
+                //                         <label className="custom-control-label" htmlFor="popular"></label>
+                //                         </div>
+                //                     </FormGroup>
+                //                 </Col>
+                //             </Row>
+                //             <Row className="g-3">
+                //                 <Col lg="5">
+                //                     <FormGroup>
+                //                         <label className="form-label" htmlFor="editor">
+                //                         Editor
+                //                         </label>
+                //                     </FormGroup>
+                //                 </Col>
+                //                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                //                     <FormGroup>
+                //                         <div className="custom-control custom-switch">
+                //                         <input
+                //                             type="checkbox"
+                //                             className="custom-control-input form-control"
+                //                             checked={editor}
+                //                             onChange={() => setEditor(!editor)}
+                //                             id="editor"
+                //                         />
+                //                         <label className="custom-control-label" htmlFor="editor"></label>
+                //                         </div>
+                //                     </FormGroup>
+                //                 </Col>
+                //             </Row>
+                //             <OverlineTitle tag="span" className="preview-title-lg mt-3">
+                //                 Socials{" "}
+                //             </OverlineTitle>
+                //             <Row className="g-3">
+                //                 <Col lg="5">
+                //                     <FormGroup>
+                //                         <label className="form-label" htmlFor="facebook">
+                //                         Facebook
+                //                         </label>
+                //                     </FormGroup>
+                //                 </Col>
+                //                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                //                     <FormGroup>
+                //                         <div className="custom-control custom-switch">
+                //                         <input
+                //                             type="checkbox"
+                //                             className="custom-control-input form-control"
+                //                             checked={facebook}
+                //                             onChange={() => setFacebook(!facebook)}
+                //                             id="facebook"
+                //                         />
+                //                         <label className="custom-control-label" htmlFor="facebook"></label>
+                //                         </div>
+                //                     </FormGroup>
+                //                 </Col>
+                //             </Row>
+                //             {/* <Row className="g-3">
+                //                 <Col lg="5">
+                //                     <FormGroup>
+                //                         <label className="form-label" htmlFor="twitter">
+                //                         Twitter
+                //                         </label>
+                //                     </FormGroup>
+                //                 </Col>
+                //                 <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                //                     <FormGroup>
+                //                         <div className="custom-control custom-switch">
+                //                         <input
+                //                             type="checkbox"
+                //                             className="custom-control-input form-control"
+                //                             onChange={() => setTwitter(!twitter)}
+                //                             id="facebook"
+                //                         />
+                //                         <label className="custom-control-label" htmlFor="twitter"></label>
+                //                         </div>
+                //                     </FormGroup>
+                //                 </Col>
+                //             </Row> */}
                     
-//                             <Row className="mt-4">
-//                                 <Col xl="12">
-//                                     <Button color="primary" size="md" onClick={handleSubmit(onFormSubmit)}>
-//                                         Publish
-//                                     </Button>
-//                                 </Col>
-//                             </Row>
-//                         </PreviewCard>
-//                         <PreviewCard>
-//                             <OverlineTitle tag="span" className="preview-title-lg">
-//                                 Cover Image{" "}
-//                             </OverlineTitle>
-//                             <Row size="12">
-//                                 <Col>
-//                                     <img src={imageUrl ? imageUrl : "https://react.dashlite.net/demo1/static/media/b.ab88cd7174e0ef667479.jpg"} alt="preview" />
-//                                 </Col>
-//                             </Row>
-//                             <Row size="12">
-//                                 <Col size="6">
-//                                     <div className="form-control-wrap mt-3">
-//                                         <label className="form-label">Upload Image</label>
-//                                         <div className="input-group">
-//                                             <div className="custom-file">
-//                                             <input
-//                                                 type="file"
-//                                                 className="custom-file-input"
-//                                                 id="inputGroupFile04"
-//                                                 onChange={handleImageInput}
-//                                             />
-//                                             <label className="custom-file-label" htmlFor="inputGroupFile04">
-//                                             {selected === "" ? "Choose files" : selected}
-//                                             </label>
-//                                             </div>
-//                                         </div>
-//                                     </div>
-//                                 </Col>
-//                             </Row>
-//                             <Row className="mt-4">
-//                                 <Col xl="12">
-//                                     <Button color="primary" size="md" onClick={uploadImage}>
-//                                         Upload
-//                                     </Button>
-//                                 </Col>
-//                             </Row>
-//                         </PreviewCard>
-//                     </Block>
-//                 </Col>
+                //             <Row className="mt-4">
+                //                 <Col xl="12">
+                //                     <Button color="primary" size="md" onClick={handleSubmit(onFormSubmit)}>
+                //                         Publish
+                //                     </Button>
+                //                 </Col>
+                //             </Row>
+                //         </PreviewCard>
+                //         <PreviewCard>
+                //             <OverlineTitle tag="span" className="preview-title-lg">
+                //                 Cover Image{" "}
+                //             </OverlineTitle>
+                //             <Row size="12">
+                //                 <Col>
+                //                     <img src={imageUrl ? imageUrl : "https://react.dashlite.net/demo1/static/media/b.ab88cd7174e0ef667479.jpg"} alt="preview" />
+                //                 </Col>
+                //             </Row>
+                //             <Row size="12">
+                //                 <Col size="6">
+                //                     <div className="form-control-wrap mt-3">
+                //                         <label className="form-label">Upload Image</label>
+                //                         <div className="input-group">
+                //                             <div className="custom-file">
+                //                             <input
+                //                                 type="file"
+                //                                 className="custom-file-input"
+                //                                 id="inputGroupFile04"
+                //                                 onChange={handleImageInput}
+                //                             />
+                //                             <label className="custom-file-label" htmlFor="inputGroupFile04">
+                //                             {selected === "" ? "Choose files" : selected}
+                //                             </label>
+                //                             </div>
+                //                         </div>
+                //                     </div>
+                //                 </Col>
+                //             </Row>
+                //             <Row className="mt-4">
+                //                 <Col xl="12">
+                //                     <Button color="primary" size="md" onClick={uploadImage}>
+                //                         Upload
+                //                     </Button>
+                //                 </Col>
+                //             </Row>
+                //         </PreviewCard>
+                //     </Block>
+                // </Col>
 //             </Row>
 //         </Block>
 //         </Content>

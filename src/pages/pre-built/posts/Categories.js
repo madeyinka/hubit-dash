@@ -124,7 +124,7 @@ function Categories() {
             })
 
         } catch (e) {
-
+            console.log(e)
         }
     }
 

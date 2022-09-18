@@ -256,7 +256,7 @@ function CreatePost() {
                                         onChange={(e) => setFormData({...formData, content:e})}
                                         modules={modules('t1')}
                                         formats={formats}
-                                        style={{ width: "100%", height: "100%" }}
+                                        style={{ width: "100%", height: "250px" }}
                                     />
                                 </FormGroup>
                             </Col>
