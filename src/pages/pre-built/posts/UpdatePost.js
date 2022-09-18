@@ -328,7 +328,7 @@ function UpdatePost() {
                                         id="author"
                                         name="author"
                                         className="form-control"
-                                        value={data.author}
+                                        defaultValue={data.author}
                                         onChange={(e) => onInputChange(e)}
                                         placeholder="Post Author"
                                     />
