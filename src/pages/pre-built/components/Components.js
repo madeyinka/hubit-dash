@@ -21,7 +21,6 @@ import {
     Icon,
     Button,
     Col,
-    UserAvatar,
     PaginationComponent,
     DataTable,
     DataTableBody,
@@ -66,7 +65,7 @@ function Components() {
             isMounted = false
             controller.abort()
         }
-    },[])
+    },[axiosPrivate])
 
     const tagList = [
         { value:"red", label:"red", theme:"red" },
@@ -159,7 +158,7 @@ function Components() {
             <BlockHead size="sm">
                 <BlockBetween>
                     <BlockHeadContent>
-                        <BlockTitle page> Components</BlockTitle>
+                        <BlockTitle page> Component Lists</BlockTitle>
                         <BlockDes className="text-soft">You have total {data.length} projects</BlockDes>
                     </BlockHeadContent>
                     <BlockHeadContent>
@@ -191,10 +190,10 @@ function Components() {
                             <DataTableRow className="nk-tb-col-check">
                                 <div className="custom-control custom-control-sm custom-checkbox notext">
                                     <input
-                                    type="checkbox"
-                                    className="custom-control-input form-control"
-                                    id="pid-all"
-                                    onChange={(e) => selectorCheck(e)}
+                                        type="checkbox"
+                                        className="custom-control-input form-control"
+                                        id="pid-all"
+                                        //onChange={(e) => selectorCheck(e)}
                                     />
                                     <label className="custom-control-label" htmlFor="pid-all"></label>
                                 </div>

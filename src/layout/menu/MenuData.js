@@ -38,17 +38,7 @@ const menu = [
   {
     icon: "b-si",
     text: "Services",
-    active: false,
-    subMenu: [
-       {
-         text: "New Component",
-         link: "/components"
-       },
-       {
-         text: "List Components",
-         link: "/lists"
-       }
-    ]
+    link: "/dashboard/services"
    },
    {
     icon: "img",
@@ -71,12 +61,12 @@ const menu = [
     active: false,
     subMenu: [
        {
-         text: "New Component",
-         link: "/components"
+         text: "Units",
+         link: "/units"
        },
        {
-         text: "List Components",
-         link: "/lists"
+         text: "Messages",
+         link: "/messages"
        }
     ]
    },
@@ -86,12 +76,12 @@ const menu = [
     active: false,
     subMenu: [
        {
-         text: "New Component",
+         text: "Subscribers List",
          link: "/components"
        },
        {
-         text: "List Components",
-         link: "/lists"
+         text: "New Bulletin",
+         link: "/new-bulletin"
        }
     ]
    },

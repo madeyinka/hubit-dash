@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = process.env.REACT_APP_ENV == 'development' ? 
+const baseUrl = process.env.REACT_APP_ENV === 'development' ? 
                 process.env.REACT_APP_DEV_ENDPOINT : process.env.REACT_APP_PROD_ENDPOINT
 
 export default axios.create({

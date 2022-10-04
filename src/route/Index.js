@@ -11,6 +11,7 @@ import CreatePost from "../pages/pre-built/posts/CreatePost"
 import PostLists from "../pages/pre-built/posts/PostLists"
 import Attributes from "../pages/pre-built/posts/Tags"
 import UpdatePost from "../pages/pre-built/posts/UpdatePost"
+import Services from "../pages/pre-built/services/Services"
 
 const Pages = () => {
   useLayoutEffect(() => {
@@ -29,6 +30,7 @@ const Pages = () => {
         <Route path="/post/edit/:id" element={<UpdatePost />} />
         <Route path="/post/attributes" element={<Attributes />} />
         <Route path="/post/list" element={<PostLists />} />
+        <Route path="/services" element={<Services />} />
 
         <Route path="*" element={<Error404Modern />} />
       </Routes>

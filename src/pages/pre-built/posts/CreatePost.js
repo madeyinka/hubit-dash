@@ -51,6 +51,7 @@ function CreatePost() {
     const [slider, setSlider] = useState(false)
     const [popular, setPopular] = useState(false)
     const [editor, setEditor] = useState(false)
+    const [status, setStatus] = useState(false)
 
 
     useEffect(() => {
@@ -121,7 +122,7 @@ function CreatePost() {
                 keywords:unique(formData.meta_keywords.replace(" ","").split(",")),
                 description:formData.meta_desc
             },
-            status:1,
+            status:status,
             author:formData.author,
             pub_date:formData.pub_date
         }
@@ -260,27 +261,6 @@ function CreatePost() {
                                     />
                                 </FormGroup>
                             </Col>
-                            {/* <Col md="12">
-                                <label className="form-label">Content</label>
-                                <Editor
-                                    onInit={(evt, editor) => (editorRef.current = editor)}
-                                    initialValue="<p></p>"
-                                    onEditorChange={(e) => setFormData({...formData, content:e})}
-                                    init={{
-                                        menubar: false,
-                                        plugins: [
-                                        "advlist autolink lists link image charmap print preview anchor",
-                                        "searchreplace visualblocks code fullscreen",
-                                        "insertdatetime media table paste code",
-                                        ],
-                                        toolbar:
-                                        "undo redo | formatselect | " +
-                                        "bold italic | alignleft aligncenter " +
-                                        "alignright alignjustify | outdent indent",
-                                    }}
-                                />
-                                {errors.content && <span className="invalid">{errors.content.message}</span>}
-                            </Col> */}
                         </Row>
                     </PreviewCard>
                     <PreviewCard>
@@ -534,6 +514,31 @@ function CreatePost() {
                                 </Col>
                             </Row>
                             <OverlineTitle tag="span" className="preview-title-lg mt-3">
+                                Settings{" "}
+                            </OverlineTitle>
+                            <Row className="g-3">
+                                <Col lg="5">
+                                    <FormGroup>
+                                        <label className="form-label" htmlFor="status">
+                                        Publish
+                                        </label>
+                                    </FormGroup>
+                                </Col>
+                                <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                                    <FormGroup>
+                                        <div className="custom-control custom-switch">
+                                        <input
+                                            type="checkbox"
+                                            className="custom-control-input form-control"
+                                            onChange={() => setStatus(!status)}
+                                            id="status"
+                                        />
+                                        <label className="custom-control-label" htmlFor="status"></label>
+                                        </div>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <OverlineTitle tag="span" className="preview-title-lg mt-3">
                                 Socials{" "}
                             </OverlineTitle>
                             <Row className="g-3">
@@ -584,7 +589,7 @@ function CreatePost() {
                             <Row className="mt-4">
                                 <Col xl="12">
                                     <Button color="primary" size="md" onClick={handleSubmit(onFormSubmit)}>
-                                        Publish
+                                        Create Post
                                     </Button>
                                 </Col>
                             </Row>

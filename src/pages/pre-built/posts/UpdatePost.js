@@ -34,6 +34,7 @@ function UpdatePost() {
     const [slider, setSlider] = useState(false)
     const [popular, setPopular] = useState(false)
     const [editor, setEditor] = useState(false)
+    const [status, setStatus] = useState(false)
     const [selected, setSelected] = useState('')
     const [imageUrl, setImageUrl] = useState('')
     const [imagePreview, setImagePreview] = useState('')
@@ -71,6 +72,7 @@ function UpdatePost() {
                         setEditor(item.post_settings.editor)
                         setFacebook(item.post_settings.facebook)
                         setImageUrl(item.image)
+                        setStatus(item.status)
                     }
                 })
             }
@@ -160,7 +162,8 @@ function UpdatePost() {
                 slider:slider,
                 popular:popular,
                 editor:editor,
-                facebook:facebook
+                facebook:facebook,
+                status:status
             },
             seo:{
                 title: formData?.meta_title ? formData.meta_title : data.meta_title,
@@ -534,6 +537,32 @@ function UpdatePost() {
                                 </Col>
                             </Row>
                             <OverlineTitle tag="span" className="preview-title-lg mt-3">
+                                Settings{" "}
+                            </OverlineTitle>
+                            <Row className="g-3">
+                                <Col lg="5">
+                                    <FormGroup>
+                                        <label className="form-label" htmlFor="status">
+                                        Publish
+                                        </label>
+                                    </FormGroup>
+                                </Col>
+                                <Col lg="7" style={{"position": "relative","left": "58px"}}>
+                                    <FormGroup>
+                                        <div className="custom-control custom-switch">
+                                        <input
+                                            type="checkbox"
+                                            className="custom-control-input form-control"
+                                            checked={status}
+                                            onChange={() => {setStatus(!status); setFormData({...formData, "status":!status})}}
+                                            id="status"
+                                        />
+                                        <label className="custom-control-label" htmlFor="status"></label>
+                                        </div>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                            <OverlineTitle tag="span" className="preview-title-lg mt-3">
                                 Socials{" "}
                             </OverlineTitle>
                             <Row className="g-3">
@@ -585,7 +614,7 @@ function UpdatePost() {
                             <Row className="mt-4">
                                 <Col xl="12">
                                     <Button color="primary" size="md" onClick={handleSubmit(onFormSubmit)}>
-                                        Publish
+                                        Update Post
                                     </Button>
                                 </Col>
                             </Row>

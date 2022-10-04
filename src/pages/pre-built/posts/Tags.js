@@ -303,12 +303,18 @@ function Attributes() {
                                         }):null}
                                 </DataTableBody>
                                 <div className="card-inner">
-                                    <PaginationComponent 
+                                {authors.length > 0 ? (
+                                    <PaginationComponent
                                         itemPerPage={itemPerPage}
                                         totalItems={authors.length}
                                         paginate={paginate}
                                         currentPage={currentPage}
                                     />
+                                ) : (
+                                    <div className="text-center">
+                                        <span className="text-silent">No component found</span>
+                                    </div>
+                                )}
                                 </div>
                             </DataTable>
                         </PreviewCard>

@@ -169,7 +169,7 @@ function Categories() {
         })
         .catch(err => {
             console.log(err)
-            setModal({ add: false})
+            //setModal({ add: false})
 
         })
     } 
@@ -208,12 +208,12 @@ function Categories() {
 
   return (
     <React.Fragment>
-        <Head title="Components"></Head>
+        <Head title="Categories"></Head>
         <Content>
             <BlockHead size="sm">
                 <BlockBetween>
                     <BlockHeadContent>
-                        <BlockTitle page> Categories</BlockTitle>
+                        <BlockTitle page> Category Lists</BlockTitle>
                         <BlockDes className="text-soft">You have total {data.length} categories</BlockDes>
                     </BlockHeadContent>
                     <BlockHeadContent>
@@ -486,7 +486,7 @@ function Categories() {
                                     <input
                                         type="text"
                                         name="image"
-                                        value={imageUrl}
+                                        defaultValue={imageUrl}
                                         placeholder="Enter Image URL or Icon class"
                                         onChange={(e) => onInputChange(e)}
                                         className="form-control"
@@ -537,19 +537,19 @@ function Categories() {
                             <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                                 <Col md="12">
                                     <FormGroup>
-                                    <label className="form-label">Label</label>
-                                    <input
-                                        type="text"
-                                        name="label"
-                                        defaultValue={formData.label}
-                                        placeholder="Enter Component Label"
-                                        onChange={(e) => onInputChange(e)}
-                                        className="form-control"
-                                        ref={register({
-                                        required: "This field is required",
-                                        })}
-                                    />
-                                    {errors.label && <span className="invalid">{errors.label.message}</span>}
+                                        <label className="form-label">Label</label>
+                                        <input
+                                            type="text"
+                                            name="label"
+                                            defaultValue={formData.label}
+                                            placeholder="Enter Component Label"
+                                            onChange={(e) => onInputChange(e)}
+                                            className="form-control"
+                                            ref={register({
+                                            required: "This field is required",
+                                            })}
+                                        />
+                                        {errors.label && <span className="invalid">{errors.label.message}</span>}
                                     </FormGroup>
                                 </Col>
                                 <Col md="6">
