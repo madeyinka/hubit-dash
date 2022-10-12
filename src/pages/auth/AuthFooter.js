@@ -99,7 +99,7 @@ const AuthFooter = () => {
           </Col>
           <Col lg="6">
             <div className="nk-block-content text-center text-lg-left">
-              <p className="text-soft">&copy; 2022 Dashlite. All Rights Reserved.</p>
+              <p className="text-soft">&copy; 2022 HubIT Dev. All Rights Reserved.</p>
             </div>
           </Col>
         </Row>
