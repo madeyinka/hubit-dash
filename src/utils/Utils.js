@@ -158,6 +158,16 @@ export const bytesToMegaBytes = (bytes) => {
   return result.toFixed(2);
 };
 
+export const sortByDate = (a, b) => {
+  if (a.date_added < b.date_added) {
+      return 1
+  }
+  if (a.date_added > b.date_added) {
+      return -1
+  }
+  return 0
+}
+
 export const monthNames = [
   "January",
   "February",

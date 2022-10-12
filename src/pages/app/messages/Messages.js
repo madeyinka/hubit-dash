@@ -190,7 +190,7 @@ const AppMessages = () => {
                           <div className="attchment">{item.attactchment && <Icon name="clip-h"></Icon>}</div>
                           <div className="date">{item.date}</div>
                         </div>
-                      </div>
+                      </div> 
                       <div className="nk-msg-context">
                         <div className="nk-msg-text">
                           <h6 className="title">{item.messageTitle}</h6>

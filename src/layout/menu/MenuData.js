@@ -62,11 +62,11 @@ const menu = [
     subMenu: [
        {
          text: "Units",
-         link: "/units"
+         link: "/dashboard/contact/units"
        },
        {
          text: "Messages",
-         link: "/messages"
+         link: "/dashboard/contact/messages"
        }
     ]
    },

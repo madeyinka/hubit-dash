@@ -202,7 +202,7 @@ function Services() {
                 <BlockBetween>
                     <BlockHeadContent>
                         <BlockTitle page> Service Lists</BlockTitle>
-                        <BlockDes className="text-soft">You have total 10 projects</BlockDes>
+                        <BlockDes className="text-soft">You have total {data?.length} projects</BlockDes>
                     </BlockHeadContent>
                     <BlockHeadContent>
                         <div className="toggle-wrap nk-block-tools-toggle">
@@ -339,7 +339,7 @@ function Services() {
                                 }): null}
                         </DataTableBody>
                         <div className="card-inner">
-                    {data.length > 0 ? (
+                            {data.length > 0 ? (
                             <PaginationComponent
                                 itemPerPage={itemPerPage}
                                 totalItems={data.length}

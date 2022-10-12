@@ -12,6 +12,8 @@ import PostLists from "../pages/pre-built/posts/PostLists"
 import Attributes from "../pages/pre-built/posts/Tags"
 import UpdatePost from "../pages/pre-built/posts/UpdatePost"
 import Services from "../pages/pre-built/services/Services"
+import Units from "../pages/pre-built/contact/Units"
+import Messages from "../pages/pre-built/contact/Messages"
 
 const Pages = () => {
   useLayoutEffect(() => {
@@ -31,6 +33,8 @@ const Pages = () => {
         <Route path="/post/attributes" element={<Attributes />} />
         <Route path="/post/list" element={<PostLists />} />
         <Route path="/services" element={<Services />} />
+        <Route path="/contact/units" element={<Units />} />
+        <Route path="/contact/messages" element={<Messages />} />
 
         <Route path="*" element={<Error404Modern />} />
       </Routes>

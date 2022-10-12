@@ -141,6 +141,15 @@ function Components() {
         })
     }
 
+    const onDelete = async (id) => {
+        try {
+            const response = await axiosPrivate.delete('/component/delete?identity='+id)
+            setData(response.data.data.components)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     // Get current list, pagination
     const indexOfLastItem = currentPage * itemPerPage;
     const indexOfFirstItem = indexOfLastItem - itemPerPage;
@@ -210,14 +219,14 @@ function Components() {
                             <DataTableRow size="lg">
                                 <span className="sub-text">Description</span>
                             </DataTableRow>
-                            <DataTableRow className="nk-tb-col-tools text-right">
-                                <UncontrolledDropdown>
+                            <DataTableRow className="nk-tb-col-tools">
+                                {/*<UncontrolledDropdown>
                                     <DropdownToggle tag="a" className="btn btn-xs btn-trigger btn-icon dropdown-toggle mr-n1">
                                         <Icon name="more-h"></Icon>
                                     </DropdownToggle>
-                                    <DropdownMenu right>
+                                     <DropdownMenu right>
                                         <ul className="link-list-opt no-bdr">
-                                            {/* <li onClick={(ev) => console.log(ev)}>
+                                             <li onClick={(ev) => console.log(ev)}>
                                                 <DropdownItem
                                                     tag="a"
                                                     href="#markasdone"
@@ -228,8 +237,8 @@ function Components() {
                                                     <Icon name="check-round-cut"></Icon>
                                                     <span>Edit Component</span>
                                                 </DropdownItem>
-                                            </li> */}
-                                            <li onClick={(ev) => console.log(ev)}>
+                                            </li> 
+                                             <li onClick={(ev) => console.log(ev)}>
                                                 <DropdownItem
                                                     tag="a"
                                                     href="#remove"
@@ -240,11 +249,11 @@ function Components() {
                                                     <Icon name="trash"></Icon>
                                                     <span>Delete Bulk</span>
                                                 </DropdownItem>
-                                            </li>
+                                            </li> 
                                         </ul>
-                                    </DropdownMenu>
-                                </UncontrolledDropdown>
-                            </DataTableRow>
+                                    </DropdownMenu> 
+                                </UncontrolledDropdown> */}
+                            </DataTableRow> 
                         </DataTableHead>
                         {currentItems.length > 0
                             ? currentItems.map((item) => {
@@ -279,7 +288,7 @@ function Components() {
                                         <DataTableRow>
                                             <span>{item.description.slice(0, 25)}</span>{item.description.length > 25 ? "...":""}
                                         </DataTableRow>
-                                        <DataTableRow className="nk-tb-col-tools text-right">
+                                        <DataTableRow className="nk-tb-col-tools">
                                             <ul className="nk-tb-actions gx-1">
                                                 <li>
                                                     <UncontrolledDropdown>
@@ -300,12 +309,13 @@ function Components() {
                                                                         <span>Edit</span>
                                                                     </DropdownItem>
                                                                 </li>
-                                                                <li onClick={(ev) => console.log(ev)}>
+                                                                <li>
                                                                     <DropdownItem
                                                                         tag="a"
                                                                         href="#remove"
                                                                         onClick={(ev) => {
-                                                                        ev.preventDefault();
+                                                                            ev.preventDefault();
+                                                                            onDelete(item.id)
                                                                         }}
                                                                     >
                                                                         <Icon name="trash"></Icon>
@@ -410,22 +420,22 @@ function Components() {
                                 </Col>
                                 <Col size="12">
                                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                                    <li>
-                                        <Button color="primary" size="md" type="submit">
-                                            Add Component
-                                        </Button>
-                                    </li>
-                                    <li>
-                                        <Button
-                                        onClick={(ev) => {
-                                            ev.preventDefault();
-                                            onFormCancel();
-                                        }}
-                                        className="link link-light"
-                                        >
-                                        Cancel
-                                        </Button>
-                                    </li>
+                                        <li>
+                                            <Button color="primary" size="md" type="submit">
+                                                Add Component
+                                            </Button>
+                                        </li>
+                                        <li>
+                                            <Button
+                                            onClick={(ev) => {
+                                                ev.preventDefault();
+                                                onFormCancel();
+                                            }}
+                                            className="link link-light"
+                                            >
+                                            Cancel
+                                            </Button>
+                                        </li>
                                     </ul>
                                 </Col>
                             </Form>
