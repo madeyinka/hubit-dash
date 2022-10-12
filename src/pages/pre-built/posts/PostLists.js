@@ -119,12 +119,17 @@ function PostLists() {
     setData([...newData]);
   };
 
-  const onEditClick = (id) => {
-
-  }
-
   // function to toggle the search option
   const toggle = () => setonSearch(!onSearch);
+
+  const onDelete = async (id) => {
+    try {
+      const response = await axiosPrivate.delete('/post/delete?identity='+id)
+      setData(response.data.data.posts)
+  } catch (err) {
+      console.log(err)
+  }
+  }
 
   // Get current list, pagination
   const indexOfLastItem = currentPage * itemPerPage;
@@ -545,12 +550,13 @@ function PostLists() {
                                         <span>Edit</span>
                                         </DropdownItem>
                                     </li>
-                                    <li onClick={() => onEditClick(item.id)}>
+                                    <li>
                                         <DropdownItem
                                           tag="a"
                                           href="#delete"
                                           onClick={(ev) => {
                                             ev.preventDefault();
+                                            onDelete(item.id)
                                           }}
                                         >
                                         <Icon name="trash"></Icon>

@@ -88,16 +88,16 @@ const menu = [
    {
     heading: "Settings"
    },
-   {
-    icon: "setting",
-    text: "Configurations",
-    subMenu: [
-      {
-        text: "Socials",
-        link: "/dashboard/settings/socials/configurations"
-      }
-    ]
-   }
+  //  {
+  //   icon: "setting",
+  //   text: "Configurations",
+  //   subMenu: [
+  //     {
+  //       text: "Socials",
+  //       link: "/dashboard/settings/socials/configurations"
+  //     }
+  //   ]
+  //  }
 ]
 
 export const _menu = [

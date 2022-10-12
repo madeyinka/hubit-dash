@@ -121,7 +121,7 @@ const UserProfileLayout = () => {
                         <span>Basic Information</span>
                       </Link>
                     </li>
-                    <li onClick={() => updateSm(false)}>
+                    {/* <li onClick={() => updateSm(false)}>
                       <Link
                         to={`${process.env.PUBLIC_URL}/dashboard/user/business-information`}
                         className={
@@ -155,7 +155,7 @@ const UserProfileLayout = () => {
                         <Icon name="lock-alt-fill"></Icon>
                         <span>Security Setting</span>
                       </Link>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
               </div>

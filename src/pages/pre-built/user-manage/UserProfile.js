@@ -47,7 +47,7 @@ const UserProfileRegularPage = ({ sm, updateSm, setProfileName }) => {
   },[])
 
   useEffect(() => {
-    setProfileName("Hubit Doe");
+    setProfileName("Hubit Dev");
   }, []);
 
   const onInputChange = (e) => {

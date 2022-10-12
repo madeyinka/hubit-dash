@@ -77,12 +77,12 @@ const User = () => {
             <LinkItem link="/dashboard/user/basic-information" icon="user-alt" onClick={toggle}>
               View Profile
             </LinkItem>
-            <LinkItem link="/user-profile-setting" icon="setting-alt" onClick={toggle}>
+            {/* <LinkItem link="/user-profile-setting" icon="setting-alt" onClick={toggle}>
               Account Setting
             </LinkItem>
             <LinkItem link="/dashboard/user/profile-activity" icon="activity-alt" onClick={toggle}>
               Preferences
-            </LinkItem>
+            </LinkItem> */}
           </LinkList>
         </div>
         <div className="dropdown-inner">
